@@ -1,0 +1,35 @@
+<VirtualHost *:80>
+  DocumentRoot /var/www/html/nextcloud/
+  ServerName  {{ nextcloud_fqdn }}
+
+  <Directory /var/www/html/nextcloud/>
+    Require all granted
+    AllowOverride All
+    Options FollowSymLinks MultiViews
+    SetEnv HOME /var/www/html/nextcloud
+    SetEnv HTTP_HOME /var/www/html/nextcloud
+
+    <IfModule mod_dav.c>
+      Dav off
+    </IfModule>
+
+  </Directory>
+</VirtualHost>
+
+<VirtualHost *:443>
+  DocumentRoot /var/www/html/nextcloud/
+  ServerName  {{ nextcloud_fqdn }}
+
+  <Directory /var/www/html/nextcloud/>
+    Require all granted
+    AllowOverride All
+    Options FollowSymLinks MultiViews
+    SetEnv HOME /var/www/html/nextcloud
+    SetEnv HTTP_HOME /var/www/html/nextcloud
+
+    <IfModule mod_dav.c>
+      Dav off
+    </IfModule>
+
+  </Directory>
+</VirtualHost>

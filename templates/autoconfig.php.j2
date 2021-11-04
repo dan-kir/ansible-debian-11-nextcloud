@@ -1,0 +1,12 @@
+<?php
+$AUTOCONFIG = array(
+  "dbtype"        => "mysql",
+  "dbname"        => "{{ nextcloud_db_name }}",
+  "dbuser"        => "{{ nextcloud_db_user }}",
+  "dbpass"        => "{{ nextcloud_db_user_pass }}",
+  "dbhost"        => "localhost",
+  "dbtableprefix" => "",
+  "adminlogin"    => "{{ nextcloud_admin_user }}",
+  "adminpass"     => "{{ nextcloud_admin_pass }}",
+  "directory"     => "{{ nextcloud_data_dir }}",
+);

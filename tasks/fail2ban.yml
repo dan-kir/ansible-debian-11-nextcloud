@@ -1,0 +1,35 @@
+---
+- name: Fail2Ban - Install fail2ban packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - fail2ban
+
+- name: Fail2Ban - Copy jail_nextcloud.conf file
+  ansible.builtin.copy:
+    src: jail_nextcloud.conf
+    dest: "/etc/fail2ban/filter.d/jail_nextcloud.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart fail2ban
+
+- name: Fail2Ban - Copy jail_nextcloud.local file
+  ansible.builtin.copy:
+    src: jail_nextcloud.local
+    dest: "/etc/fail2ban/jail.d/jail_nextcloud.local"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart fail2ban
+
+- name: Fail2Ban - Start and enable fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban.service
+    enabled: yes
+    state: started
+    masked: no

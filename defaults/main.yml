@@ -1,0 +1,18 @@
+---
+nextcloud_admin_user: root
+nextcloud_admin_pass: NextcloudRootPass
+
+nextcloud_db_name: nextclouddb
+nextcloud_db_user: nextclouduser
+nextcloud_db_user_pass: Nextcloud@123#
+
+nextcloud_data_dir: /var/www/html/nextcloud/data
+
+nextcloud_firewall_config_enabled: yes
+
+nextcloud_fqdn: your.domainhere.com
+
+## Domain A record needs to be configured and working for certbot to
+## successfully issue a certificate.
+certbot_enabled: yes
+certbot_email: admin@email.com

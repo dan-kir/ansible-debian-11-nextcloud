@@ -1,0 +1,82 @@
+---
+## firewalld configuration
+firewalld_config:
+  - parameter: DefaultZone
+    value: public
+    config: /etc/firewalld/firewalld.conf
+  - parameter: FirewallBackend
+    value: nftables
+    config: /etc/firewalld/firewalld.conf
+
+
+nextcloud_config:
+  - parameter: memcache.local
+    value: \OC\Memcache\APCu
+    config: /var/www/html/nextcloud/config/config.php
+
+php_config:
+  - parameter: memory_limit
+    value: 512M
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: upload_max_filesize
+    value: 1G
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: max_file_uploads
+    value: 50
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: expose_php
+    value: Off
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: file_uploads
+    value: On
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: allow_url_fopen
+    value: On
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: post_max_size
+    value: 600M
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: max_execution_time
+    value: 300
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: display_errors
+    value: Off
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: date.timezone
+    value: Etc/UTC
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: output_buffering
+    value: Off
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: zend_extension
+    value: opcache
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.enable
+    value: 1
+    config: /etc/php/8.0/apache2/php.ini
+
+  - parameter: opcache.interned_strings_buffer
+    value: 8
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.max_accelerated_files
+    value: 10000
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.enable
+    value: 1
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.memory_consumption
+    value: 128
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.save_comments
+    value: 1
+    config: /etc/php/8.0/apache2/php.ini
+  - parameter: opcache.revalidate_freq
+    value: 1
+    config: /etc/php/8.0/apache2/php.ini
+
+  - parameter: opcache.max_accelerated_files
+    value: 10000
+    config: /etc/php/8.0/apache2/conf.d/10-opcache.ini
+  - parameter: opcache.revalidate_freq
+    value: 1
+    config: /etc/php/8.0/apache2/conf.d/10-opcache.ini

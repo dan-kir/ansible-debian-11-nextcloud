@@ -1,0 +1,50 @@
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - gnupg
+    - lsb-release
+    - apt-transport-https
+
+- name: Install Sury PHP Repo signing key
+  ansible.builtin.apt_key:
+    url: https://packages.sury.org/php/apt.gpg
+    state: present
+
+- name: Configure sury.org PHP repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.sury.org/php/ {{ ansible_lsb.codename }} main"
+    state: present
+    update_cache: yes
+
+- name: Install PHP
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - php
+    - php-curl
+    - php-cli
+    - php-mysql
+    - php-gd
+    - php-common
+    - php-xml
+    - php-json
+    - php-intl
+    - php-pear
+    - php-imagick
+    - php-dev
+    - php-common
+    - php-mbstring
+    - php-zip
+    - php-soap
+    - php-bz2
+    - php-bcmath
+    - php-gmp
+    - php-apcu
+    - libmagickcore-dev

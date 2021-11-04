@@ -1,0 +1,37 @@
+---
+- name: Install mariadb
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - mariadb-server
+    - mariadb-client
+    - python3-pymysql
+
+- name: Start and enable MariaDB
+  ansible.builtin.systemd:
+    name: mariadb.service
+    enabled: yes
+    state: started
+    masked: no
+
+- name: Create nextcloud db user with all database privileges
+  mysql_user:
+    name: "{{ nextcloud_db_user }}"
+    password: "{{ nextcloud_db_user_pass }}"
+    priv: '*.*:ALL,GRANT'
+    host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+    state: present
+
+- name: Create nextcloud database
+  mysql_db:
+    name: "{{ nextcloud_db_name }}"
+    login_user: "{{ nextcloud_db_user }}"
+    login_password: "{{ nextcloud_db_user_pass }}"
+    login_host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present

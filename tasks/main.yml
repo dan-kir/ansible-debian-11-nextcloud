@@ -1,0 +1,97 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- ansible.builtin.import_tasks: php.yml
+- ansible.builtin.import_tasks: mariadb.yml
+- ansible.builtin.import_tasks: firewall.yml
+  when:
+    - nextcloud_firewall_config_enabled | bool
+- ansible.builtin.import_tasks: apache.yml
+- ansible.builtin.import_tasks: fail2ban.yml
+
+- name: Check that nextcloud directory does not already exist
+  stat:
+    path: /var/www/html/nextcloud/
+  register: nextcloud_dir_check
+
+- name: Download and extract nextcloud
+  unarchive:
+    src: https://download.nextcloud.com/server/releases/latest-22.tar.bz2
+    dest: /var/www/html/
+    remote_src: yes
+  when: nextcloud_dir_check.stat.exists == False
+  ignore_errors: yes
+
+- name: Create data directory
+  file:
+    path: "{{ nextcloud_data_dir }}"
+    state: directory
+
+- name: Check that nextcloud config does not already exist
+  stat:
+    path: /var/www/html/nextcloud/config/config.php
+  register: nextcloud_config_check
+
+- name: Install autoconfig.php
+  ansible.builtin.template:
+    src: autoconfig.php.j2
+    dest: "/var/www/html/nextcloud/config/autoconfig.php"
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: Recursively change ownership of nextcloud directory
+  file:
+    path: /var/www/html/nextcloud
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+
+- name: Check that php.ini exists
+  stat:
+    path: /etc/php/8.0/apache2/php.ini
+  register: php_conf
+  check_mode: no
+
+- name: Check that 10-opcache.ini exists
+  stat:
+    path: /etc/php/8.0/apache2/conf.d/10-opcache.ini
+  register: php_opcache_conf
+  check_mode: no
+
+- name: Check that Nextcloud conf exists
+  stat:
+    path: /var/www/html/nextcloud/config/config.php
+  register: nextcloud_conf
+  check_mode: no
+
+- name: Adjust PHP configurations
+  lineinfile:
+    dest: "{{ item.config }}"
+    regexp: '^#?{{ item.parameter }}\s*='
+    line: "{{ item.parameter }} = {{ item.value }}"
+  with_items: "{{ php_config }}"
+  when:
+    - php_conf.stat.exists
+    - php_opcache_conf.stat.exists
+  notify:
+    - Restart apache2
+
+- name: Adjust Nextcloud configurations
+  lineinfile:
+    dest: "{{ item.config }}"
+    regexp: '^#?{{ item.parameter }}\s*=>'
+    line: "  '{{ item.parameter }}' => '{{ item.value }}',"
+    insertafter: "'installed' => true,"
+  with_items: "{{ nextcloud_config }}"
+  when:
+    - nextcloud_conf.stat.exists
+  notify:
+    - Restart apache2
+
+- ansible.builtin.import_tasks: certbot.yml
+  when:
+    - certbot_enabled | bool

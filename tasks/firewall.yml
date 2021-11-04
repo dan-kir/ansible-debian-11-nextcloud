@@ -1,0 +1,55 @@
+---
+- name: Ensure Firewalld installed
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - firewalld
+    - nftables
+
+- name: Start and enable firewalld
+  ansible.builtin.systemd:
+    name: firewalld.service
+    enabled: yes
+    state: started
+    masked: no
+  register: firewalld_service
+
+- name: Check that Firewalld conf exists
+  ansible.builtin.stat:
+    path: /etc/firewalld/firewalld.conf
+  register: firewalld_conf
+  check_mode: no
+
+- name: Adjust Firewalld configurations
+  ansible.builtin.lineinfile:
+    dest: "{{ item.config }}"
+    regexp: '^#?{{ item.parameter }}\s*='
+    line: "{{ item.parameter }}={{ item.value }}"
+  with_items: "{{ firewalld_config }}"
+  when:
+    - firewalld_conf.stat.exists
+  notify:
+    - Restart firewalld
+
+- name: Firewalld Apache HTTP rule
+  ansible.posix.firewalld:
+    port: 80/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+  notify: Restart firewalld
+  when:
+    - firewalld_service is not skipped
+
+- name: Firewalld Apache HTTPS rule
+  ansible.posix.firewalld:
+    port: 443/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+  notify: Restart firewalld
+  when:
+    - firewalld_service is not skipped
+    - certbot_enabled | bool
