@@ -1,5 +1,5 @@
 ---
-- name: Install snapd
+- name: Certbot - Install snapd
   ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
@@ -14,22 +14,25 @@
     state: started
     masked: no
 
-- name: Install snap core
-  shell: snap install core; snap refresh core
+- name: Certbot - Install snap core
+  ansible.builtin.shell: snap install core; snap refresh core
   ignore_errors: yes
+  changed_when: False
 
-- name: Install Certbot
-  shell: snap install --classic certbot
+- name: Certbot - Install Certbot
+  ansible.builtin.shell: snap install --classic certbot
   ignore_errors: yes
+  changed_when: False
 
-- name: Check that Certbot hasnt already issued a cert
-  stat:
+- name: Certbot - Check that Certbot hasnt already issued a cert
+  ansible.builtin.stat:
     path: /etc/letsencrypt/live/{{ nextcloud_fqdn }}
   register: certbot_cert_check
+  check_mode: no
 
-- name: Install certbot
-  shell: "/snap/bin/certbot --apache --noninteractive --agree-tos
-    --email {{ certbot_email }} -d {{ nextcloud_fqdn }}"
+- name: Certbot - Request LetsEncrypt Certificate
+  ansible.builtin.shell: "/snap/bin/certbot --apache --noninteractive --agree-tos --email {{ certbot_email }} -d {{ nextcloud_fqdn }}"
   ignore_errors: yes
   when:
     - not certbot_cert_check.stat.exists
+  changed_when: False

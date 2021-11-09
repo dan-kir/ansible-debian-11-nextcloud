@@ -51,18 +51,15 @@ php_config:
   - parameter: zend_extension
     value: opcache
     config: /etc/php/8.0/apache2/php.ini
+
   - parameter: opcache.enable
     value: 1
     config: /etc/php/8.0/apache2/php.ini
-
   - parameter: opcache.interned_strings_buffer
     value: 8
     config: /etc/php/8.0/apache2/php.ini
   - parameter: opcache.max_accelerated_files
     value: 10000
-    config: /etc/php/8.0/apache2/php.ini
-  - parameter: opcache.enable
-    value: 1
     config: /etc/php/8.0/apache2/php.ini
   - parameter: opcache.memory_consumption
     value: 128
@@ -73,7 +70,6 @@ php_config:
   - parameter: opcache.revalidate_freq
     value: 1
     config: /etc/php/8.0/apache2/php.ini
-
   - parameter: opcache.max_accelerated_files
     value: 10000
     config: /etc/php/8.0/apache2/conf.d/10-opcache.ini

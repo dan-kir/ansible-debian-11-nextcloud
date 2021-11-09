@@ -10,7 +10,7 @@
 - name: Fail2Ban - Copy jail_nextcloud.conf file
   ansible.builtin.copy:
     src: jail_nextcloud.conf
-    dest: "/etc/fail2ban/filter.d/jail_nextcloud.conf"
+    dest: "/etc/fail2ban/filter.d/nextcloud.conf"
     owner: root
     group: root
     mode: 0644
@@ -18,9 +18,9 @@
     - Restart fail2ban
 
 - name: Fail2Ban - Copy jail_nextcloud.local file
-  ansible.builtin.copy:
-    src: jail_nextcloud.local
-    dest: "/etc/fail2ban/jail.d/jail_nextcloud.local"
+  ansible.builtin.template:
+    src: jail_nextcloud.local.j2
+    dest: "/etc/fail2ban/jail.d/nextcloud.local"
     owner: root
     group: root
     mode: 0644
@@ -33,3 +33,4 @@
     enabled: yes
     state: started
     masked: no
+  changed_when: false

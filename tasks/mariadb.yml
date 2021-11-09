@@ -1,5 +1,5 @@
 ---
-- name: Install mariadb
+- name: MariaDB - Install mariadb
   ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
@@ -10,15 +10,15 @@
     - mariadb-client
     - python3-pymysql
 
-- name: Start and enable MariaDB
+- name: MariaDB - Start and enable MariaDB
   ansible.builtin.systemd:
     name: mariadb.service
     enabled: yes
     state: started
     masked: no
 
-- name: Create nextcloud db user with all database privileges
-  mysql_user:
+- name: MariaDB - Create nextcloud db user with all database privileges
+  community.mysql.mysql_user:
     name: "{{ nextcloud_db_user }}"
     password: "{{ nextcloud_db_user_pass }}"
     priv: '*.*:ALL,GRANT'
@@ -27,8 +27,8 @@
     check_implicit_admin: yes
     state: present
 
-- name: Create nextcloud database
-  mysql_db:
+- name: MariaDB - Create nextcloud database
+  community.mysql.mysql_db:
     name: "{{ nextcloud_db_name }}"
     login_user: "{{ nextcloud_db_user }}"
     login_password: "{{ nextcloud_db_user_pass }}"

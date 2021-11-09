@@ -20,6 +20,13 @@
 
 - name: Apache2 - Enable Apache modules
   ansible.builtin.command: "a2enmod ssl rewrite headers env dir mime"
+  changed_when: false
+
+- name: Apache2 - Check that Certbot hasnt already configured site
+  stat:
+    path: /etc/letsencrypt/live/{{ nextcloud_fqdn }}
+  register: certbot_site_check
+  check_mode: no
 
 - name: Apache2 - Copy Nextcloud apache2 configuration file
   ansible.builtin.template:
@@ -28,10 +35,11 @@
     owner: root
     group: root
     mode: 0644
+  when:
+    - not certbot_site_check.stat.exists
   notify: Restart apache2
-
-
 
 - name: Apache2 - Disable default site
   ansible.builtin.command: "a2dissite 000-default.conf"
   ignore_errors: yes
+  changed_when: false

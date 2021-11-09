@@ -11,65 +11,63 @@
 - ansible.builtin.import_tasks: apache.yml
 - ansible.builtin.import_tasks: fail2ban.yml
 
-- name: Check that nextcloud directory does not already exist
-  stat:
+- name: Nextcloud - Check that nextcloud directory does not already exist
+  ansible.builtin.stat:
     path: /var/www/html/nextcloud/
   register: nextcloud_dir_check
+  check_mode: no
 
-- name: Download and extract nextcloud
-  unarchive:
+- name: Nextcloud - Download and extract nextcloud
+  ansible.builtin.unarchive:
     src: https://download.nextcloud.com/server/releases/latest-22.tar.bz2
     dest: /var/www/html/
     remote_src: yes
   when: nextcloud_dir_check.stat.exists == False
   ignore_errors: yes
 
-- name: Create data directory
-  file:
+- name: Nextcloud - Create data directory
+  ansible.builtin.file:
     path: "{{ nextcloud_data_dir }}"
     state: directory
 
-- name: Check that nextcloud config does not already exist
-  stat:
+- name: Nextcloud - Check that nextcloud config does not already exist
+  ansible.builtin.stat:
     path: /var/www/html/nextcloud/config/config.php
   register: nextcloud_config_check
+  check_mode: no
 
-- name: Install autoconfig.php
+- name: Nextcloud - Install autoconfig.php
   ansible.builtin.template:
     src: autoconfig.php.j2
     dest: "/var/www/html/nextcloud/config/autoconfig.php"
     owner: www-data
     group: www-data
     mode: 0644
+  when:
+    - not nextcloud_config_check.stat.exists
 
-- name: Recursively change ownership of nextcloud directory
-  file:
+- name: Nextcloud - Recursively change ownership of nextcloud directory
+  ansible.builtin.file:
     path: /var/www/html/nextcloud
     state: directory
     recurse: yes
     owner: www-data
     group: www-data
 
-- name: Check that php.ini exists
-  stat:
+- name: Nextcloud - Check that php.ini exists
+  ansible.builtin.stat:
     path: /etc/php/8.0/apache2/php.ini
   register: php_conf
   check_mode: no
 
-- name: Check that 10-opcache.ini exists
-  stat:
+- name: Nextcloud - Check that 10-opcache.ini exists
+  ansible.builtin.stat:
     path: /etc/php/8.0/apache2/conf.d/10-opcache.ini
   register: php_opcache_conf
   check_mode: no
 
-- name: Check that Nextcloud conf exists
-  stat:
-    path: /var/www/html/nextcloud/config/config.php
-  register: nextcloud_conf
-  check_mode: no
-
-- name: Adjust PHP configurations
-  lineinfile:
+- name: Nextcloud - Adjust PHP configurations
+  ansible.builtin.lineinfile:
     dest: "{{ item.config }}"
     regexp: '^#?{{ item.parameter }}\s*='
     line: "{{ item.parameter }} = {{ item.value }}"
@@ -80,15 +78,15 @@
   notify:
     - Restart apache2
 
-- name: Adjust Nextcloud configurations
-  lineinfile:
+- name: Nextcloud - Adjust Nextcloud configurations
+  ansible.builtin.lineinfile:
     dest: "{{ item.config }}"
     regexp: '^#?{{ item.parameter }}\s*=>'
     line: "  '{{ item.parameter }}' => '{{ item.value }}',"
     insertafter: "'installed' => true,"
   with_items: "{{ nextcloud_config }}"
   when:
-    - nextcloud_conf.stat.exists
+    - nextcloud_config_check.stat.exists
   notify:
     - Restart apache2
 
