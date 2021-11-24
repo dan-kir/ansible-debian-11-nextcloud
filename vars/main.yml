@@ -25,13 +25,13 @@ php_config:
     value: 50
     config: /etc/php/8.0/apache2/php.ini
   - parameter: expose_php
-    value: Off
+    value: "Off"
     config: /etc/php/8.0/apache2/php.ini
   - parameter: file_uploads
-    value: On
+    value: "On"
     config: /etc/php/8.0/apache2/php.ini
   - parameter: allow_url_fopen
-    value: On
+    value: "On"
     config: /etc/php/8.0/apache2/php.ini
   - parameter: post_max_size
     value: 600M
@@ -40,13 +40,13 @@ php_config:
     value: 300
     config: /etc/php/8.0/apache2/php.ini
   - parameter: display_errors
-    value: Off
+    value: "Off"
     config: /etc/php/8.0/apache2/php.ini
   - parameter: date.timezone
     value: Etc/UTC
     config: /etc/php/8.0/apache2/php.ini
   - parameter: output_buffering
-    value: Off
+    value: "Off"
     config: /etc/php/8.0/apache2/php.ini
   - parameter: zend_extension
     value: opcache

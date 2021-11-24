@@ -4,6 +4,8 @@ This role installs and configures Nextcloud.
 
 Running this role again after after initializing Nextcloud, will enable PHP APCu memcache.
 
+To configure an S3 bucket as the primary storage back-end https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3
+
 Requirements
 ------------
 Requires Ansible 2.10 or later. This role has only been tested on Debian 11 (Bullseye).
